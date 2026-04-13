@@ -1,22 +1,19 @@
 FROM node:18-alpine
 
-# Installation des dépendances système nécessaires pour Prisma sur Alpine
-RUN apk add --no-cache openssl
+# 1. INDISPENSABLE : Installer openssl et libc6-compat pour Prisma sur Alpine
+RUN apk add --no-cache openssl libc6-compat
 
 WORKDIR /app
 
-# On copie les fichiers de dépendances en premier pour optimiser le cache Docker
+# 2. On copie les fichiers de config et on installe
 COPY package*.json ./
-
-# Installation des dépendances
 RUN npm install
 
-# On copie le reste des fichiers (incluant le dossier prisma/)
+# 3. On copie le reste (le dossier prisma doit être copié ICI)
 COPY . .
 
-# Génération du client Prisma avec le CLI local installé par npm
-RUN ./node_modules/.bin/prisma generate
+# 4. Utiliser npx (qui gère mieux les chemins que le chemin relatif)
+RUN npx prisma generate
 
 EXPOSE 3000
-
 CMD ["npm", "run", "dev"]
