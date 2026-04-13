@@ -11,14 +11,11 @@ COPY package*.json ./
 # Installation des dépendances
 RUN npm install
 
-# Installation de Prisma de manière globale pour garantir l'accès à la CLI
-RUN npm install -g prisma
-
 # On copie le reste des fichiers (incluant le dossier prisma/)
 COPY . .
 
-# Génération du client Prisma
-RUN npx prisma generate
+# Génération du client Prisma avec le CLI local installé par npm
+RUN ./node_modules/.bin/prisma generate
 
 EXPOSE 3000
 
